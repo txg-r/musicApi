@@ -1,10 +1,16 @@
 package com.tyfff.musicapi.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tyfff.musicapi.domain.dto.SongData;
+import com.tyfff.musicapi.domain.dto.User;
+import com.tyfff.musicapi.domain.dto.UserPlaylistSongs;
 import com.tyfff.musicapi.domain.dto.UserSongHistory;
+import com.tyfff.musicapi.service.PlaylistsService;
+import com.tyfff.musicapi.service.UserPlaylistSongsService;
+import com.tyfff.musicapi.service.UserService;
 import com.tyfff.musicapi.service.UserSongHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +26,15 @@ public class MusicRecommendationService {
 
     @Autowired
     private UserSongHistoryService userSongHistoryService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PlaylistsService playlistsService;
+
+    @Autowired
+    private UserPlaylistSongsService playlistSongsService;
 
     private static final String NETEASE_API = "http://180.76.105.127:3000";
 
@@ -64,6 +79,7 @@ public class MusicRecommendationService {
         if (remainRecommendations > 0) {
             dayRecommend.addAll(getRandomSongData(remainRecommendations));
         }
+        Collections.shuffle(dayRecommend);
 
         return dayRecommend;
     }
@@ -114,9 +130,9 @@ public class MusicRecommendationService {
     public SongData getOneRecommendByUserHistory(Integer userId) {
         List<UserSongHistory> top10In7Day = userSongHistoryService.findTopSongsByUserIdInGivenDays(userId, 3, 20);
 
-       if (top10In7Day.size()==0){
-           return getRandomSongData(1).get(0);
-       }
+        if (top10In7Day.size() == 0) {
+            return getRandomSongData(1).get(0);
+        }
 
         // 生成随机数，取出对应的歌曲
         Random random = new Random();
@@ -177,6 +193,26 @@ public class MusicRecommendationService {
 
         return artistIds;
     }
+
+    public void createDayRecommendations(){
+        List<User> activeUsers = userService.getActiveUsers();
+
+        for (User activeUser : activeUsers) {
+            createUserDayRecommendations(activeUser.getUserId());
+        }
+    }
+
+    public void createUserDayRecommendations(Integer userId){
+        List<SongData> dayRecommend = getDayRecommendByUserHistory(userId, 20);
+        playlistsService.createDayRecommendations(userId,dayRecommend);
+    }
+
+    public List<SongData> getDayRecommend(Integer userId) {
+        List<UserPlaylistSongs> recommend = playlistSongsService.getDayRecommend(userId);
+
+        return recommend.stream().map(r -> new SongData(r.getExternalSongId())).collect(Collectors.toList());
+    }
+
 
 
 }

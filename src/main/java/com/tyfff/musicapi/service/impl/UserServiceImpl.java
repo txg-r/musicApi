@@ -6,11 +6,10 @@ import com.tyfff.musicapi.domain.dto.User;
 import com.tyfff.musicapi.service.UserService;
 import com.tyfff.musicapi.mapper.UserMapper;
 import com.tyfff.musicapi.utils.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * @author tyfff
@@ -20,13 +19,25 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         implements UserService {
+
+
+    @Autowired
+    private MusicRecommendationService musicRecommendationService;
+
     @Override
     public boolean registerUser(User user) {
-        if (baseMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getUsername,user.getUsername()))!=null) {
+        User existUser = baseMapper.selectOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, user.getUsername()));
+        if (existUser!=null) {
             return false;
         }
-        return baseMapper.insert(user)==1;
+
+        baseMapper.insert(user);
+
+        //新用户创建每日推荐歌单
+        musicRecommendationService.createUserDayRecommendations(user.getUserId());
+
+        return true;
 
     }
 
@@ -36,6 +47,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                 .eq(User::getUsername, username)
                 .eq(User::getPassword, password));
         return user == null ? null : JwtUtil.getJwtToken(user.getUserId());
+    }
+
+    @Override
+    public List<User> getActiveUsers() {
+        return baseMapper.selectByLastLoginOnDay(7);
     }
 }
 

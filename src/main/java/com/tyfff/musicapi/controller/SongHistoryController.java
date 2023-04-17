@@ -1,7 +1,7 @@
 package com.tyfff.musicapi.controller;
 
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tyfff.musicapi.domain.dto.User;
 import com.tyfff.musicapi.domain.dto.UserSongHistory;
@@ -11,9 +11,6 @@ import com.tyfff.musicapi.service.UserSongHistoryService;
 import com.tyfff.musicapi.utils.UserHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/song-history")
@@ -46,7 +43,7 @@ public class SongHistoryController {
 
     @GetMapping("/page")
     public ResponseResult<PageVo<UserSongHistory>> page(Long pageNum, Long pageSize){
-        PageVo<UserSongHistory> songHistoryPageVo = userSongHistoryService.pageById(UserHolder.get().getUserId(), new Page<UserSongHistory>(pageNum, pageSize));
+        PageVo<UserSongHistory> songHistoryPageVo = userSongHistoryService.pageById(UserHolder.get().getUserId(), new Page<>(pageNum, pageSize));
         return ResponseResult.ok("播放历史分页数据",songHistoryPageVo);
     }
 }

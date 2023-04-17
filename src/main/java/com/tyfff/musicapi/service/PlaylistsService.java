@@ -2,6 +2,9 @@ package com.tyfff.musicapi.service;
 
 import com.tyfff.musicapi.domain.dto.Playlists;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tyfff.musicapi.domain.dto.SongData;
+
+import java.util.List;
 
 /**
 * @author tyfff
@@ -10,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PlaylistsService extends IService<Playlists> {
 
+    void createDayRecommendations(Integer userId, List<SongData> dayRecommend);
 }

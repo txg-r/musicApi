@@ -28,7 +28,7 @@ public class MusicRecommendController {
     @GetMapping("/day-recommend")
     public ResponseResult<List<SongData>> dayRecommend(){
         User user = UserHolder.get();
-        List<SongData> dayRecommend = musicRecommendationService.getDayRecommendByUserHistory(user.getUserId(), 20);
+        List<SongData> dayRecommend = musicRecommendationService.getDayRecommend(user.getUserId());
         return ResponseResult.ok("每日推荐",dayRecommend);
     }
 }

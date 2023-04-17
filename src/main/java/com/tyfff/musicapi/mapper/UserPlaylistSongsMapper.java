@@ -2,6 +2,10 @@ package com.tyfff.musicapi.mapper;
 
 import com.tyfff.musicapi.domain.dto.UserPlaylistSongs;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
 * @author tyfff
@@ -11,6 +15,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface UserPlaylistSongsMapper extends BaseMapper<UserPlaylistSongs> {
 
+    @Select("SELECT ups.* FROM user_playlist_songs ups " +
+            "INNER JOIN playlists p ON ups.playlist_id = p.playlist_id " +
+            "WHERE p.playlist_name = '每日推荐' AND DATE(ups.added_at) = CURDATE() " +
+            "AND ups.user_id = #{userId}")
+    List<UserPlaylistSongs> selectDayRecommend(@Param("userId") Integer userId);
 }
 
 

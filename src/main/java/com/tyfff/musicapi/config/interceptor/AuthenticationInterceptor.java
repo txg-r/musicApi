@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Date;
 import java.util.Enumeration;
 
 @Component
@@ -32,6 +33,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (user == null) {
             throw new AuthenticationException();
         }
+        user.setLastLogin(new Date());
+        userService.updateById(user);
         UserHolder.set(user);
         return true;
 

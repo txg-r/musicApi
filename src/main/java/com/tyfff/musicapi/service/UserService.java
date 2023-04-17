@@ -1,7 +1,9 @@
 package com.tyfff.musicapi.service;
 
-import com.tyfff.musicapi.domain.dto.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tyfff.musicapi.domain.dto.User;
+
+import java.util.List;
 
 /**
 * @author tyfff
@@ -13,4 +15,6 @@ public interface UserService extends IService<User> {
     boolean registerUser(User user);
 
     String authenticateUser(String username, String password);
+
+    List<User> getActiveUsers();
 }

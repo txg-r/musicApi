@@ -13,6 +13,8 @@ import com.tyfff.musicapi.mapper.UserPlaylistSongsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
 * @author tyfff
 * @description 针对表【user_playlist_songs】的数据库操作Service实现
@@ -22,9 +24,13 @@ import org.springframework.stereotype.Service;
 public class UserPlaylistSongsServiceImpl extends ServiceImpl<UserPlaylistSongsMapper, UserPlaylistSongs>
     implements UserPlaylistSongsService{
 
-    @Autowired
-    private PlaylistsService playlistsService;
 
+    private final PlaylistsService playlistsService;
+
+    @Autowired
+    public UserPlaylistSongsServiceImpl(PlaylistsService playlistsService) {
+        this.playlistsService = playlistsService;
+    }
 
     @Override
     public ResponseResult<Void> createFavoriteSong(Integer userId, String songId) {
@@ -55,7 +61,7 @@ public class UserPlaylistSongsServiceImpl extends ServiceImpl<UserPlaylistSongsM
                 .eq(UserPlaylistSongs::getUserId, userId)
                 .eq(UserPlaylistSongs::getExternalSongId, songId);
         baseMapper.delete(wrapper);
-        return ResponseResult.ok("s删除收藏成功");
+        return ResponseResult.ok("删除收藏成功");
     }
 
     @Override
@@ -66,6 +72,11 @@ public class UserPlaylistSongsServiceImpl extends ServiceImpl<UserPlaylistSongsM
         PageVo<UserPlaylistSongs> userPlaylistSongsPageVo = new PageVo<>();
         userPlaylistSongsPageVo.copyFromPage(selectPage);
         return userPlaylistSongsPageVo;
+    }
+
+    @Override
+    public List<UserPlaylistSongs> getDayRecommend(Integer userId) {
+        return baseMapper.selectDayRecommend(userId);
     }
 }
 

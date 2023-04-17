@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.tyfff.musicapi.domain.r.ResponseResult;
 import com.tyfff.musicapi.domain.vo.PageVo;
 
+import java.util.List;
+
 /**
 * @author tyfff
 * @description 针对表【user_playlist_songs】的数据库操作Service
@@ -19,4 +21,6 @@ public interface UserPlaylistSongsService extends IService<UserPlaylistSongs> {
     ResponseResult<Void> removeFavoriteSong(Integer userId, String songId);
 
     PageVo<UserPlaylistSongs> pageFavoriteByUserId(Integer userId, Page<UserPlaylistSongs> userPlaylistSongsPage);
+
+    List<UserPlaylistSongs> getDayRecommend(Integer userId);
 }
